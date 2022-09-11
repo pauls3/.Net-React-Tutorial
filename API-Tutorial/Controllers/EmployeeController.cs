@@ -1,6 +1,7 @@
 ﻿/*
-        API Methods for department table on sql database
-*/
+ *  API methods on employee screen.
+ */
+
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,15 +10,16 @@ using System.Data;
 using System.Data.SqlClient;
 using API_Tutorial.Models;
 
+
 namespace API_Tutorial.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentController : ControllerBase
+    public class EmployeeController : ControllerBase
     {
         private readonly IConfiguration _configuration;
 
-        public DepartmentController(IConfiguration configuration)
+        public EmployeeController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -27,7 +29,10 @@ namespace API_Tutorial.Controllers
         public JsonResult Get()
         {
             string query = @"
-                           select DepartmentId, DepartmentName from dbo.Department
+                            select EmployeeId, EmployeeName, Department,
+                            convert(varchar(10), DateOfJoining, 120) as DateOfJoining,
+                            PhotoFileName
+                            from dbo.Employee
                            ";
 
             DataTable table = new DataTable();
@@ -35,7 +40,7 @@ namespace API_Tutorial.Controllers
             // variable that stores database connection string
             string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
             SqlDataReader myReader;
-            using(SqlConnection myCon = new SqlConnection(sqlDataSource))
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
             {
                 myCon.Open();
                 using (SqlCommand myCommand = new SqlCommand(query, myCon))
@@ -56,11 +61,18 @@ namespace API_Tutorial.Controllers
         // Insert query
         [HttpPost]
 
-        public JsonResult Post(Department dep)
+        public JsonResult Post(Employee emp)
         {
             string query = @"
-                           insert into dbo.Department values
-                           ('" + dep.DepartmentName + @"')
+                            insert into dbo.Employee
+                            (EmployeeName,Department,DateOfJoining,PhotoFileName)
+                            values
+                            (
+                            '" + emp.EmployeeName + @"',
+                            '" + emp.Department + @"',
+                            '" + emp.DateOfJoining + @"',
+                            '" + emp.PhotoFileName + @"'
+                            )
                            ";
 
             DataTable table = new DataTable();
@@ -90,12 +102,15 @@ namespace API_Tutorial.Controllers
         // Update query/put method
         [HttpPut]
 
-        public JsonResult Put(Department dep)
+        public JsonResult Put(Employee emp)
         {
             string query = @"
-                            update dbo.Department set 
-                            DepartmentName = '" + dep.DepartmentName + @"'
-                            where DepartmentId = '" + dep.DepartmentId + @"'
+                            update dbo.Employee set 
+                            EmployeeName = '" + emp.EmployeeName + @"',
+                            Department = '" + emp.Department + @"',
+                            DateOfJoining = '" + emp.DateOfJoining + @"',
+                            PhotoFileName = '" + emp.PhotoFileName + @"'
+                            where EmployeeId = '" + emp.EmployeeID + @"'
                             ";
 
             DataTable table = new DataTable();
@@ -130,8 +145,8 @@ namespace API_Tutorial.Controllers
         public JsonResult Delete(int id)
         {
             string query = @"
-                            delete from dbo.Department
-                            where DepartmentId = '" + id + @"'
+                            delete from dbo.Employee
+                            where EmployeeId = '" + id + @"'
                             ";
 
             DataTable table = new DataTable();
