@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using API_Tutorial.Models;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace API_Tutorial.Controllers
@@ -18,10 +20,12 @@ namespace API_Tutorial.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        public EmployeeController(IConfiguration configuration)
+        public EmployeeController(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
+            _env = env;
         }
 
         // API method to get department details
@@ -169,5 +173,36 @@ namespace API_Tutorial.Controllers
 
             return new JsonResult("Deleted Successfully");
         }
+
+
+
+        [Route("SaveFile")]
+        [HttpPost]
+        public JsonResult SaveFile()
+        {
+            try
+            {
+                var httpRequest = Request.Form;
+                var postedFile = httpRequest.Files[0];
+                string fileName = postedFile.FileName;
+                var physicalPath = _env.ContentRootPath + "/Photos/" + fileName;
+
+                using(var stream = new FileStream(physicalPath, FileMode.Create))
+                {
+                    postedFile.CopyTo(stream);
+                }
+
+                return new JsonResult(fileName);
+            }
+            // If there is any exception, return default anonymous.png file
+            catch (Exception)
+            {
+                return new JsonResult("anonymous.png");
+            }
+        }
+
+
+
+
     }
 }
