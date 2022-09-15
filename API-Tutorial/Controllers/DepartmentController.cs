@@ -214,13 +214,45 @@ namespace API_Tutorial.Controllers
         // Receives id as input
 
         // id in url, so it needs to be in root parameter
+        //[HttpDelete]
         [HttpDelete("{id}")]
 
-        public JsonResult Delete(int id)
+        public JsonResult Delete(Department dep)
         {
+            string spName = @"departmentDelete";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    SqlParameter param1 = new SqlParameter();
+                    param1.ParameterName = "@DepartmentId";
+                    param1.SqlDbType = SqlDbType.VarChar;
+                    param1.Value = dep.DepartmentId;
+
+                    myCommand.Parameters.Add(param1);
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            /*
             string query = @"
                             delete from dbo.Department
-                            where DepartmentId = '" + id + @"'
+                            where DepartmentId = '" + dep.DepartmentId + @"' and
+                            DepartmentName = '" + dep.DepartmentName + @"'
                             ";
 
             DataTable table = new DataTable();
@@ -240,6 +272,7 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
+            */
 
             return new JsonResult("Deleted Successfully");
         }

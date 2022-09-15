@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using API_Tutorial.Models;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Runtime.Intrinsics.Arm;
 
 
 namespace API_Tutorial.Controllers
@@ -45,6 +46,7 @@ namespace API_Tutorial.Controllers
                 using (SqlCommand myCommand = new SqlCommand(spName, myCon))
                 {
                     myCommand.CommandType = CommandType.StoredProcedure;
+
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
 
@@ -89,9 +91,57 @@ namespace API_Tutorial.Controllers
 
         // Insert query
         [HttpPost]
-
         public JsonResult Post(Employee emp)
         {
+            string spName = @"employeePost";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    SqlParameter param1 = new SqlParameter();
+                    param1.ParameterName = "@EmployeeName";
+                    param1.SqlDbType = SqlDbType.VarChar;
+                    param1.Value = emp.EmployeeName;
+
+                    SqlParameter param2 = new SqlParameter();
+                    param2.ParameterName = "@Department";
+                    param2.SqlDbType = SqlDbType.VarChar;
+                    param2.Value = emp.Department;
+
+                    SqlParameter param3 = new SqlParameter();
+                    param3.ParameterName = "@DateOfJoining";
+                    param3.SqlDbType = SqlDbType.Date;
+                    param3.Value = emp.DateOfJoining;
+                    //param3.Value = DateOnly.ParseExact();
+
+                    SqlParameter param4 = new SqlParameter();
+                    param4.ParameterName = "@PhotoFileName";
+                    param4.SqlDbType = SqlDbType.VarChar;
+                    param4.Value = emp.PhotoFileName;
+
+                    myCommand.Parameters.Add(param1);
+                    myCommand.Parameters.Add(param2);
+                    myCommand.Parameters.Add(param3);
+                    myCommand.Parameters.Add(param4);
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            /*
             string query = @"
                             insert into dbo.Employee
                             (EmployeeName,Department,DateOfJoining,PhotoFileName)
@@ -121,6 +171,7 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
+            */
 
             return new JsonResult("Added Successfully");
         }
@@ -133,6 +184,61 @@ namespace API_Tutorial.Controllers
 
         public JsonResult Put(Employee emp)
         {
+            string spName = @"employeeUpdate";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    SqlParameter param1 = new SqlParameter();
+                    param1.ParameterName = "@EmployeeName";
+                    param1.SqlDbType = SqlDbType.VarChar;
+                    param1.Value = emp.EmployeeName;
+
+                    SqlParameter param2 = new SqlParameter();
+                    param2.ParameterName = "@Department";
+                    param2.SqlDbType = SqlDbType.VarChar;
+                    param2.Value = emp.Department;
+
+                    SqlParameter param3 = new SqlParameter();
+                    param3.ParameterName = "@DateOfJoining";
+                    param3.SqlDbType = SqlDbType.Date;
+                    param3.Value = emp.DateOfJoining;
+
+                    SqlParameter param4 = new SqlParameter();
+                    param4.ParameterName = "@PhotoFileName";
+                    param4.SqlDbType = SqlDbType.VarChar;
+                    param4.Value = emp.PhotoFileName;
+
+                    SqlParameter param5 = new SqlParameter();
+                    param5.ParameterName = "@EmployeeId";
+                    param5.SqlDbType = SqlDbType.VarChar;
+                    param5.Value = emp.EmployeeID;
+
+                    myCommand.Parameters.Add(param1);
+                    myCommand.Parameters.Add(param2);
+                    myCommand.Parameters.Add(param3);
+                    myCommand.Parameters.Add(param4);
+                    myCommand.Parameters.Add(param5);
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+
+            /*
             string query = @"
                             update dbo.Employee set 
                             EmployeeName = '" + emp.EmployeeName + @"',
@@ -159,6 +265,7 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
+            */
 
             return new JsonResult("Updated Successfully");
         }
@@ -173,6 +280,37 @@ namespace API_Tutorial.Controllers
 
         public JsonResult Delete(int id)
         {
+            string spName = @"employeeDelete";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+
+                    SqlParameter param1 = new SqlParameter();
+                    param1.ParameterName = "@EmployeeId";
+                    param1.SqlDbType = SqlDbType.Int;
+                    param1.Value = id;
+
+                    myCommand.Parameters.Add(param1);
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            /*
             string query = @"
                             delete from dbo.Employee
                             where EmployeeId = '" + id + @"'
@@ -195,6 +333,7 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
+            */
 
             return new JsonResult("Deleted Successfully");
         }
@@ -233,12 +372,33 @@ namespace API_Tutorial.Controllers
         [HttpGet]
         public JsonResult GetAllDepartmentNames()
         {
+            string spName = @"departmentNamesGet";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            /*
             string query = @"
                             select DepartmentName from dbo.Department
                            ";
-
-
-            Console.WriteLine("0000");
 
             DataTable table = new DataTable();
 
@@ -257,11 +417,9 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
+            */
 
             return new JsonResult(table);
         }
-        
-
-
     }
 }
