@@ -32,6 +32,30 @@ namespace API_Tutorial.Controllers
         [HttpGet]
         public JsonResult Get()
         {
+            string spName = @"employeeGet";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    myCommand.CommandType = CommandType.StoredProcedure;
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            return new JsonResult(table);
+
+            /*
             string query = @"
                             select EmployeeId, EmployeeName, Department,
                             convert(varchar(10), DateOfJoining, 120) as DateOfJoining,
@@ -58,6 +82,7 @@ namespace API_Tutorial.Controllers
             }
 
             return new JsonResult(table);
+            */
         }
 
 
@@ -205,11 +230,15 @@ namespace API_Tutorial.Controllers
 
         // Drop down menu to get departments for employee
         [Route("GetAllDepartmentNames")]
+        [HttpGet]
         public JsonResult GetAllDepartmentNames()
         {
             string query = @"
                             select DepartmentName from dbo.Department
                            ";
+
+
+            Console.WriteLine("0000");
 
             DataTable table = new DataTable();
 

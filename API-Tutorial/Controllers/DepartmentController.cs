@@ -26,14 +26,37 @@ namespace API_Tutorial.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            string query = @"
-                           select DepartmentId, DepartmentName from dbo.Department
-                           ";
+            string spName = @"departmentGet";
 
             DataTable table = new DataTable();
 
             // variable that stores database connection string
             string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+
+            /*string query = @"
+                           select DepartmentId, DepartmentName from dbo.Department
+                           ";
+
+            DataTable table = new DataTable();
+            */
+            // variable that stores database connection string
+            /*string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
             SqlDataReader myReader;
             using(SqlConnection myCon = new SqlConnection(sqlDataSource))
             {
@@ -46,7 +69,7 @@ namespace API_Tutorial.Controllers
                     myReader.Close();
                     myCon.Close();
                 }
-            }
+            }*/
 
             return new JsonResult(table);
         }
@@ -55,12 +78,42 @@ namespace API_Tutorial.Controllers
 
         // Insert query
         [HttpPost]
-
         public JsonResult Post(Department dep)
         {
+            string spName = @"departmentPost";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    SqlParameter param1 = new SqlParameter();
+                    param1.ParameterName = "@DepartmentName";
+                    param1.SqlDbType = SqlDbType.VarChar;
+                    param1.Value = dep.DepartmentName;
+                    myCommand.Parameters.Add(param1);
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+
+
+            /*
             string query = @"
                            insert into dbo.Department values
-                           ('" + dep.DepartmentName + @"')
+                           ('"+dep.DepartmentName+@"')
                            ";
 
             DataTable table = new DataTable();
@@ -79,7 +132,7 @@ namespace API_Tutorial.Controllers
                     myReader.Close();
                     myCon.Close();
                 }
-            }
+            }*/
 
             return new JsonResult("Added Successfully");
         }
@@ -92,6 +145,42 @@ namespace API_Tutorial.Controllers
 
         public JsonResult Put(Department dep)
         {
+            string spName = @"departmentUpdate";
+
+            DataTable table = new DataTable();
+
+            // variable that stores database connection string
+            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(spName, myCon))
+                {
+                    SqlParameter param1 = new SqlParameter();
+                    param1.ParameterName = "@DepartmentId";
+                    param1.SqlDbType = SqlDbType.VarChar;
+                    param1.Value = dep.DepartmentId;
+
+                    SqlParameter param2 = new SqlParameter();
+                    param2.ParameterName = "@DepartmentName";
+                    param2.SqlDbType = SqlDbType.VarChar;
+                    param2.Value = dep.DepartmentName;
+
+                    myCommand.Parameters.Add(param1);
+                    myCommand.Parameters.Add(param2);
+
+                    myCommand.CommandType = CommandType.StoredProcedure;
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            /*
             string query = @"
                             update dbo.Department set 
                             DepartmentName = '" + dep.DepartmentName + @"'
@@ -114,7 +203,7 @@ namespace API_Tutorial.Controllers
                     myReader.Close();
                     myCon.Close();
                 }
-            }
+            }*/
 
             return new JsonResult("Updated Successfully");
         }
