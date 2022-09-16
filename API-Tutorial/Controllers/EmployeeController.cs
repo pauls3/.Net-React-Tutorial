@@ -56,35 +56,6 @@ namespace API_Tutorial.Controllers
             }
 
             return new JsonResult(table);
-
-            /*
-            string query = @"
-                            select EmployeeId, EmployeeName, Department,
-                            convert(varchar(10), DateOfJoining, 120) as DateOfJoining,
-                            PhotoFileName
-                            from dbo.Employee
-                           ";
-
-            DataTable table = new DataTable();
-
-            // variable that stores database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            return new JsonResult(table);
-            */
         }
 
 
@@ -140,38 +111,6 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
-
-            /*
-            string query = @"
-                            insert into dbo.Employee
-                            (EmployeeName,Department,DateOfJoining,PhotoFileName)
-                            values
-                            (
-                            '" + emp.EmployeeName + @"',
-                            '" + emp.Department + @"',
-                            '" + emp.DateOfJoining + @"',
-                            '" + emp.PhotoFileName + @"'
-                            )
-                           ";
-
-            DataTable table = new DataTable();
-
-            // variable that stores database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-            */
 
             return new JsonResult("Added Successfully");
         }
@@ -237,36 +176,6 @@ namespace API_Tutorial.Controllers
                 }
             }
 
-
-            /*
-            string query = @"
-                            update dbo.Employee set 
-                            EmployeeName = '" + emp.EmployeeName + @"',
-                            Department = '" + emp.Department + @"',
-                            DateOfJoining = '" + emp.DateOfJoining + @"',
-                            PhotoFileName = '" + emp.PhotoFileName + @"'
-                            where EmployeeId = '" + emp.EmployeeID + @"'
-                            ";
-
-            DataTable table = new DataTable();
-
-            // variable that stores database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-            */
-
             return new JsonResult("Updated Successfully");
         }
 
@@ -309,31 +218,6 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
-
-            /*
-            string query = @"
-                            delete from dbo.Employee
-                            where EmployeeId = '" + id + @"'
-                            ";
-
-            DataTable table = new DataTable();
-
-            // variable that stores database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-            */
 
             return new JsonResult("Deleted Successfully");
         }
@@ -394,30 +278,6 @@ namespace API_Tutorial.Controllers
                     myCon.Close();
                 }
             }
-
-            /*
-            string query = @"
-                            select DepartmentName from dbo.Department
-                           ";
-
-            DataTable table = new DataTable();
-
-            // variable that stores database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-            */
 
             return new JsonResult(table);
         }

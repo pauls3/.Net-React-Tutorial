@@ -217,7 +217,7 @@ namespace API_Tutorial.Controllers
         //[HttpDelete]
         [HttpDelete("{id}")]
 
-        public JsonResult Delete(Department dep)
+        public JsonResult Delete(int id)
         {
             string spName = @"departmentDelete";
 
@@ -234,7 +234,7 @@ namespace API_Tutorial.Controllers
                     SqlParameter param1 = new SqlParameter();
                     param1.ParameterName = "@DepartmentId";
                     param1.SqlDbType = SqlDbType.VarChar;
-                    param1.Value = dep.DepartmentId;
+                    param1.Value = id;
 
                     myCommand.Parameters.Add(param1);
 
